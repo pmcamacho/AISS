@@ -99,7 +99,7 @@ public class AiacSigner
 		PKCS11 pkcs11;
 		String osName = System.getProperty("os.name");
 		String javaVersion = System.getProperty("java.version");
-		String libName = "pteidpkcs11.dylib";
+		String libName = "pteidpkcs11.dll";
 		Class pkcs11Class = Class.forName("sun.security.pkcs11.wrapper.PKCS11");
 
 		if (javaVersion.startsWith("1.5."))

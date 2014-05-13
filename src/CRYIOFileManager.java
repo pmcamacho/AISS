@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,15 +10,15 @@ import java.nio.file.Path;
 
 public class CRYIOFileManager {
 
-    
+
     public static CRYIOFile readFile(Path path) {
-	
+
 	CRYIOFile objFile = null;
-	
+
 	try {
-	       
+
 	    objFile = (CRYIOFile) new ObjectInputStream(new FileInputStream(path.toFile())).readObject();
-	   
+
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();
 	} catch (IOException e) {
@@ -25,23 +26,31 @@ public class CRYIOFileManager {
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	}
-	   
-	   return objFile;
-	   
+
+	return objFile;
+
     }
-    
-    public static void writeFile(Path path, CRYIOFile criofile) {
-	
+
+    public static void writeFile(Path path, CRYIOFile cryio_file) {
+
 	try {
-	       
-	    new ObjectOutputStream(new FileOutputStream(path.toFile())).writeObject(criofile);
-	   
+
+	    new ObjectOutputStream(new FileOutputStream(path.toFile())).writeObject(cryio_file);
+
 	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
+	    System.out.println(path.toString());
+	    File file = new File(path.toString());
+	    try {
+		file.createNewFile();
+		new ObjectOutputStream(new FileOutputStream(path.toFile())).writeObject(cryio_file);
+	    } catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	    }
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
-	
+
     }
-    
+
 }

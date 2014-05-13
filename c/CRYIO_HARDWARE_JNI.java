@@ -37,7 +37,7 @@ public class CRYIO_HARDWARE_JNI {
 
     static {
 
-	System.load("C:\\Users\\Sergio\\workspace\\AISS_FINAL\\HARDWARE_JNI.dll");
+	System.load("C:\\Users\\Sergio\\workspace\\AISS_FINAL\\libcryio_hardware.dll");
 
     }
 

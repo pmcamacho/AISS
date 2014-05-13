@@ -1,20 +1,11 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-import pteidlib.PteidException;
 import cartaocidadaosign.CRYIOSignature;
 
 
@@ -43,7 +34,12 @@ public class Main {
 	    System.exit(1);
 	}
 
+	System.out.println("Local Dir " + local_dir);
+	System.out.println("Cloud Dir " + cloud_dir);
+
 	while(true){
+
+
 
 	    System.out.println("Commands:");
 	    System.out.println("1 - get <file_path>");
@@ -104,25 +100,6 @@ public class Main {
 
 	s.close();
 
-
-
-	//	String opcao = args[0];
-	//	
-	//	if(opcao.equals("d")){
-	//
-	//	    CRYIOFileManager.readFile(Paths.get("/simples.cifrado"));
-	//	  
-	//	}
-	//	else if (opcao.equals("c")){
-	//	    
-	//	    byte [] hello_file =  "Hello".getBytes();
-	//	    
-	//	    CRYIOFile simples =  new CRYIOFile(hello_file, "Sergio Alves".getBytes());
-	//	    CRYIOFileManager.writeFile(Paths.get("/simples.cifrado"), simples);
-	//	    
-	//	}
-
-
     }
 
     private static void put(String local_dir, String cloud_dir, String file_path) {
@@ -132,28 +109,37 @@ public class Main {
 
 	try {
 
-	    file = Files.readAllBytes(Paths.get(local_dir, file_path));
-	    
-	    //sign.initSign();
-	    //sign.update(file);
-	    //byte [] signed = sign.sign();
-	    
-	    byte[] signed = "Sergio Alves".getBytes();
-	    
-//	    long mode_enc = CRYIO_HARDWARE_JNI.ROUNDS_10 
-//		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
-//		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
-//		    	   | CRYIO_HARDWARE_JNI.ENCRYPT_FLAG;
+	    Path p = Paths.get(local_dir, file_path);
 
+	    if(Files.notExists(p)){
+		System.out.println("O ficheiro " +  p.toString() + " nao existe!");
+		return;
+	    }
+
+	    file = Files.readAllBytes(p);
+
+	    sign.initSign();
+	    sign.update(file);
+	    byte [] signed = sign.sign();
 	    
+	    //byte [] signed = "sergio".getBytes();
+
+	    //byte[] signed = "Sergio Alves".getBytes();
+
+	    //	    long mode_enc = CRYIO_HARDWARE_JNI.ROUNDS_10 
+	    //		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
+	    //		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
+	    //		    	   | CRYIO_HARDWARE_JNI.ENCRYPT_FLAG;
+
+
 	    //Falta cifrar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	    
+
 	    CRYIOFile cryio_file = new CRYIOFile(file,signed);
-	    
+
 	    CRYIOFileManager.writeFile(Paths.get(cloud_dir, file_path), cryio_file);
-	    
-	   
-	    
+
+
+
 	} catch (IOException e) {
 	    e.printStackTrace();
 	} catch (Exception e) {
@@ -167,30 +153,35 @@ public class Main {
     private static void get(String local_dir, String cloud_dir, String file_path) {
 
 	try {
-	    
-	    
-	    CRYIOFile cryio_file =  CRYIOFileManager.readFile(Paths.get(cloud_dir, file_path));
-	    
-//	    long mode_dec = CRYIO_HARDWARE_JNI.ROUNDS_10 
-//		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
-//		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
-//		    	   | CRYIO_HARDWARE_JNI.DECRYPT_FLAG;
-	    
-	    
+
+	    Path p = Paths.get(cloud_dir, file_path);
+
+	    if(Files.notExists(p)){
+		System.out.println("O ficheiro " +  p.toString() + " nao existe!");
+		return;
+	    }
+
+	    CRYIOFile cryio_file =  CRYIOFileManager.readFile(p);
+
+	    //	    long mode_dec = CRYIO_HARDWARE_JNI.ROUNDS_10 
+	    //		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
+	    //		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
+	    //		    	   | CRYIO_HARDWARE_JNI.DECRYPT_FLAG;
+
+
 	    byte[] file = cryio_file.getFile();
 	    byte[] file_sign = cryio_file.getFileSignature();
-	    
-	    //sign.update(file);
-	    
-	    //boolean verified = sign.verifiy(file_sign);
-	    
-	    //System.out.println("Passed:? " + verified);
-	    
-	    
-	    
+
+	    sign.initVerify();
+	    sign.update(file);
+	    boolean verified = sign.verifiy(file_sign);
+	    System.out.println("Passed:? " + verified);
+
+
+
 	    Files.write(Paths.get(local_dir, file_path),file, StandardOpenOption.CREATE);  
 	    System.out.println("ok");
-	    
+
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

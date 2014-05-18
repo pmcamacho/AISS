@@ -18,6 +18,7 @@ public class CRYIOFileManager {
 	try {
 
 	    objFile = (CRYIOFile) new ObjectInputStream(new FileInputStream(path.toFile())).readObject();
+	    
 
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();

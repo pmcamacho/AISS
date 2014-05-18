@@ -1,4 +1,8 @@
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 
 public class CRYIO_HARDWARE_JNI {
@@ -35,21 +39,31 @@ public class CRYIO_HARDWARE_JNI {
     public static int MAX_DATA_OUT = (MAX_DATA_IN + AES_BLOCK_SIZE);
 
 
+
+    public  static byte[] key = key();
+    public static long keynum = 0;
+
     static {
 
-	System.load("C:\\Users\\Sergio\\workspace\\AISS_FINAL\\HARDWARE_JNI.dll");
+	System.load("C:\\Users\\Sergio\\workspace\\AISS_FINAL_V2\\HARDWARE_JNI.dll");
 
     }
 
     public native void init(long keynum, long mode, byte[] key,  byte[] IV);
-    public native char update(byte[] buffer_in, long data_len, byte[] buffer_out, long n);
-    public native char doFinal(byte[] buffer_in, long data_len, byte[] buffer_out, long n);
+    public native char update(byte[] buffer_in, long data_len, byte[] buffer_out, long[] n);
+    public native char doFinal(byte[] buffer_in, long data_len, byte[] buffer_out, long[] n);
 
-    public static void main(String args[]) {
 
-	CRYIO_HARDWARE_JNI p = new CRYIO_HARDWARE_JNI();
+    public CRYIO_HARDWARE_JNI(){
+
+
+
+    }
+
+    public static byte[] key(){
 
 	ByteBuffer origkey = ByteBuffer.allocate(4*(8+8));
+	origkey.order(ByteOrder.BIG_ENDIAN);
 
 	origkey.putInt(3,0);
 	origkey.putInt(2,0);
@@ -69,16 +83,25 @@ public class CRYIO_HARDWARE_JNI {
 	origkey.putInt(6+8, 0x18191a1b);
 	origkey.putInt(7+8, 0x1c1d1e1f);
 
+	origkey.flip();
 
 
-	long keynum = 0;
 
-	byte[] key = origkey.array();
+
+
+	return Arrays.copyOf(origkey.array(),origkey.array().length);
+    }
+
+    public static void main(String args[]) {
+
+	CRYIO_HARDWARE_JNI p = new CRYIO_HARDWARE_JNI();
+
+
 
 
 	long mode;
 	boolean isInEncriptMode = args[0].equals("c");
-	
+
 	if(isInEncriptMode)
 	    mode = ROUNDS_10 | CBC_FLAG |FIRST_FLAG| ENCRYPT_FLAG;
 	else {
@@ -87,37 +110,82 @@ public class CRYIO_HARDWARE_JNI {
 
 	byte[] IV = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+
+	//Cifrar
+	mode = ROUNDS_10 | CBC_FLAG |FIRST_FLAG| ENCRYPT_FLAG;
 	p.init(keynum, mode, key, IV);
 
 	//p.init(keynum, mode_dec, key, IV);
 
-	byte[] in = "Sergio".getBytes();
 
-	byte[] out = new byte[MAX_DATA_OUT];
+	//byte [] in = Files.readAllBytes(Paths.get(""));
 
-	int n = 0;
+	byte[] in = "SergioSergioSergioSergio".getBytes();
 
-	char ret = p.update(in,in.length, out, n);
-	
-	if(isInEncriptMode){
-	    System.out.print(new String(out));
-	    System.out.print(ret);
-	} else {
-	    System.out.print(new String(out));
-	    System.out.print(ret);
-	}
+	byte[] cifrado = new byte[MAX_DATA_OUT+1100];
 
-	ret = p.doFinal(null,0, out, n);
-	
-	
-	if(isInEncriptMode){
-	    System.out.print(new String(out));
-	    System.out.print(ret);
-	} else {
-	    System.out.print(new String(out));
-	    System.out.print(ret);
-	}
-	
+	long [] nu = new long[1];
+	long [] nf = new long[1];
+
+	System.out.println(in.length);
+	System.out.println(MAX_DATA_OUT);
+	char ret = p.update(in,in.length, cifrado, nu);
+
+	in = new byte[1];
+	ret = p.doFinal(in, 0, cifrado, nf);
+	System.out.println("nu: "+nu[0]);
+	System.out.println("nf: " + nf[0]);
+
+
+	//Decifrar
+	mode = ROUNDS_10 | CBC_FLAG |FIRST_FLAG| DECRYPT_FLAG;
+	p.init(keynum, mode, key, IV);
+
+	in = new byte[MAX_DATA_OUT];
+
+	long [] n = new long[1];
+
+
+	ret = p.update(cifrado,nu[0]+nf[0], in, n);
+	System.out.println("n decifra: " + n[0]);
+
+	in = new byte[MAX_DATA_OUT];
+	ret = p.doFinal(cifrado, 0, in, n);
+	System.out.println("n decifra: " + n[0]);
+
+	System.out.println("out:" + new String(in));
+
+
+
+	//	if(isInEncriptMode){
+	//	    System.out.println("Cifrado");
+	//	    System.out.println("n:" + n[0]);
+	//	    System.out.println("out:" + new String(out));
+	//	    System.out.println("ret:" + (int)ret);
+	//	
+	//	} else {
+	//	    System.out.println("Decifrado");
+	//	    System.out.println("n:" + n[0]);
+	//	    System.out.println("out:" + new String(out));
+	//	    System.out.println("ret:" + (int)ret);
+	//	}
+
+
+
+
+
+	//	if(isInEncriptMode){
+	//	    System.out.println("Cifrado");
+	//	    System.out.println("n:" + n[0]);
+	//	    System.out.println("out:" + new String(out));
+	//	    System.out.println("ret:" + (int)ret);
+	//	} else {
+	//	    System.out.println("Decifrado");
+	//	    System.out.println("n:" + n[0]);
+	//	    System.out.println("out:" + new String(out));
+	//	    System.out.println("ret:" + (int)ret);
+	//	}
+
     }
 
 }

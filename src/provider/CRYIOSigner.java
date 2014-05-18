@@ -1,4 +1,4 @@
-package aiss;
+package provider;
 
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
@@ -7,8 +7,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 
-import cartaocidadaosign.CRYIOSignature;
+import pteidlib.PteidException;
+import cartaocidadao.CRYIOSignature;
 
 public class CRYIOSigner extends Signature {
 	
@@ -23,7 +25,13 @@ public class CRYIOSigner extends Signature {
 	@Override
 	protected void engineInitVerify(PublicKey publicKey)
 			throws InvalidKeyException {
-		signer.initVerify(publicKey);
+		try {
+			signer.initVerify(publicKey);
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (PteidException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -35,7 +43,6 @@ public class CRYIOSigner extends Signature {
 	protected void engineInitSign(PrivateKey privateKey)
 			throws InvalidKeyException {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

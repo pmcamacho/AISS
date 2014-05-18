@@ -1,4 +1,4 @@
-package cartaocidadaosign;
+package cartaocidadao;
 
 /**
  * <p>Title: pteidlib JNI Test</p>
@@ -212,18 +212,12 @@ public class AiacSigner
 
 	PTEID_Certif[] certs = pteid.GetCertificates();
 
-	System.out.println("Number of certs found: " + certs.length);
-
 	CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
 	X509Certificate certificate;
 
 
 	for(PTEID_Certif cert : certs){
-
-
-
-	    System.out.println(cert.certifLabel);//1103
 	    if(cert.certifLabel.equals("CITIZEN AUTHENTICATION CERTIFICATE")){
 		certificate = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(cert.certif));
 		//test.authenticate(certificate);

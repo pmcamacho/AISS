@@ -1,11 +1,8 @@
-package cartaocidadaosign;
+package cartaocidadao;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 

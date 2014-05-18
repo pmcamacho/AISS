@@ -7,6 +7,8 @@ Usar o eclipse e colocar todas as libs no jar.
 
 Como Correr ?
 
+No ficheiro CRYIO_HARDWARE_JNI.java linha 49 é necessário colocar o caminho para a dll que implementa a cifra
+
 O CRY/IO permite que o utilizador defina a pasta local e a pasta na cloud durante o arranque da consola.
 
 java -jar cryio.jar <local dir> <cloud dir>

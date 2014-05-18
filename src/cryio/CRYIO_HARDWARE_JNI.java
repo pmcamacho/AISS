@@ -1,3 +1,4 @@
+package cryio;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -45,7 +46,7 @@ public class CRYIO_HARDWARE_JNI {
 
     static {
 
-	System.load("C:\\Users\\Sergio\\workspace\\AISS_FINAL_V2\\HARDWARE_JNI.dll");
+	System.load("C:\\Users\\Pedro\\Documents\\GitHub\\AISS\\HARDWARE_JNI.dll");
 
     }
 

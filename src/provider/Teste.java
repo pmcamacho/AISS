@@ -17,24 +17,11 @@ import javax.crypto.NoSuchPaddingException;
 
 public class Teste {
 
-	
-	//Passar estes parametros quando chamamos o provider
-		//	java.security.Security.addProvider(new aiss.OurProvider());
-		//
-		//	Provider p = Security.getProvider("ProviderAIAC");
-		//    
-		//    System.out.println("ProviderAIAC provider name is " + p.getName());
-		//    System.out.println("ProviderAIAC provider version # is " + p.getVersion());
-		//    System.out.println("ProviderAIAC provider info is " + p.getInfo());
-		//
-		//    testSha2();
-		//super("ProviderAIAC", 1.0D, "ProviderAIAC provider v1.0, implementing SHA-256");
-	
 	public static void main(String... args) {
 	
 		Teste teste = new Teste();
 		
-		java.security.Security.addProvider(new aiss.CRYIOProvider("ProviderAISS", 1.0, "ProviderAISS(Sign and Cipher)"));
+		java.security.Security.addProvider(new provider.CRYIOProvider("ProviderAISS", 1.0, "ProviderAISS(Sign and Cipher)"));
 		Provider p = Security.getProvider("ProviderAISS");
 		
 		

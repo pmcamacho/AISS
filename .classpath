@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Pedro/workspace/AISS_FINAL_V2/lib/CartaoCidadaoNovo.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Pedro/workspace/AISS_FINAL_V2/lib/pteidlibj.jar"/>
-	<classpathentry kind="lib" path="lib/CRYIOProvider.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/CRYIOProvider.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Pedro/Documents/GitHub/AISS/lib/CartaoCidadaoNovo.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Pedro/Documents/GitHub/AISS/lib/pteidlibj.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

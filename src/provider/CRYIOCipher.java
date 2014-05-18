@@ -1,4 +1,4 @@
-package aiss;
+package provider;
 
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
@@ -25,7 +25,7 @@ public class CRYIOCipher extends CipherSpi {
 	}
 
 	@Override
-	protected int engineDoFinal(byte[] input, int inputOffset, int inputLen,
+	protected int engineDoFinal(byte[] input, int inputOffst, int inputLen,
 			byte[] output, int outputOffset) throws ShortBufferException,
 			IllegalBlockSizeException, BadPaddingException {
 		// TODO Auto-generated method stub

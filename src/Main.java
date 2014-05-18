@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -12,6 +13,7 @@ import cartaocidadaosign.CRYIOSignature;
 public class Main {
 
     private static CRYIOSignature sign = null;
+    private static CRYIOCipher cipher = null;
 
     public static void main(String[] args) {
 
@@ -24,6 +26,7 @@ public class Main {
 	Scanner s = new Scanner(System.in);
 
 
+	cipher = new CRYIOCipher();
 
 	try {
 	    sign = CRYIOSignature.getInstance("SHA1withRSA");
@@ -37,13 +40,13 @@ public class Main {
 	System.out.println("Local Dir " + local_dir);
 	System.out.println("Cloud Dir " + cloud_dir);
 
-	while(true){
+	while(true) {
 
 
 
 	    System.out.println("Commands:");
-	    System.out.println("1 - get <file_path>");
-	    System.out.println("2 - put <file_path>");
+	    System.out.println("1 - get <file in cloud dir>");
+	    System.out.println("2 - put <file in local dir>");
 	    System.out.println("3 - exit");
 
 
@@ -118,26 +121,26 @@ public class Main {
 
 	    file = Files.readAllBytes(p);
 
-	    sign.initSign();
-	    sign.update(file);
-	    byte [] signed = sign.sign();
+	    //Assinatura
+	    //sign.initSign();
+	    //sign.update(file);
+	    //byte [] signed = sign.sign();
 	    
-	    //byte [] signed = "sergio".getBytes();
+	    //Remover
+	    byte [] signed = "Sergio Alves".getBytes();
 
-	    //byte[] signed = "Sergio Alves".getBytes();
+	    //Cifra ficheiro
+	    file = cipher.cifra(file);
 
-	    //	    long mode_enc = CRYIO_HARDWARE_JNI.ROUNDS_10 
-	    //		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
-	    //		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
-	    //		    	   | CRYIO_HARDWARE_JNI.ENCRYPT_FLAG;
+	    //Cifra assinatura
+	    signed = cipher.cifra(signed);
 
 
-	    //Falta cifrar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	    CRYIOFile cryio_file = new CRYIOFile(file,signed);
 
 	    CRYIOFileManager.writeFile(Paths.get(cloud_dir, file_path), cryio_file);
-
+	    
 
 
 	} catch (IOException e) {
@@ -150,40 +153,75 @@ public class Main {
 
     }
 
-    private static void get(String local_dir, String cloud_dir, String file_path) {
+    private static void get(String local_dir, String cloud_dir, String file) {
+
+
+
+	Path p = null;
 
 	try {
-
-	    Path p = Paths.get(cloud_dir, file_path);
-
+	    
+	    p = Paths.get(cloud_dir, file);
 	    if(Files.notExists(p)){
 		System.out.println("O ficheiro " +  p.toString() + " nao existe!");
 		return;
 	    }
 
+	}
+
+	catch(InvalidPathException e){
+	    System.out.println("O caminho foi mal especificado!");
+	    return;
+	}
+
+
+	try {
+
 	    CRYIOFile cryio_file =  CRYIOFileManager.readFile(p);
 
-	    //	    long mode_dec = CRYIO_HARDWARE_JNI.ROUNDS_10 
-	    //		    	   | CRYIO_HARDWARE_JNI.CBC_FLAG 
-	    //		    	   |CRYIO_HARDWARE_JNI.FIRST_FLAG
-	    //		    	   | CRYIO_HARDWARE_JNI.DECRYPT_FLAG;
-
-
-	    byte[] file = cryio_file.getFile();
+	    byte[] file_bytes = cryio_file.getFile();
 	    byte[] file_sign = cryio_file.getFileSignature();
 
-	    sign.initVerify();
-	    sign.update(file);
-	    boolean verified = sign.verifiy(file_sign);
-	    System.out.println("Passed:? " + verified);
 
 
 
-	    Files.write(Paths.get(local_dir, file_path),file, StandardOpenOption.CREATE);  
-	    System.out.println("ok");
+	    //Decifra ficheiro
+	    file_bytes = cipher.decifra(file_bytes);
+	    //Decifra assinatura
+	    file_sign = cipher.decifra(file_sign);
 
-	} catch (Exception e) {
-	    e.printStackTrace();
+
+	    //Verifica assinatura
+	    
+	    //sign.initVerify();
+	    //sign.update(file_bytes);
+	    //boolean verified = sign.verifiy(file_sign);
+	    
+	    
+	    //Remover!!!!!!!!!!!!
+	    boolean verified = new String(file_sign).equals("Sergio Alves");
+
+	    if(verified){
+
+		System.out.println("O ficheiro pode ser acedido " + file);
+
+	    } else {
+
+		System.out.println("Nao pode aceder ao ficheiro " + file);
+	    }
+
+	
+
+
+
+	    Files.write(Paths.get(local_dir, file),file_bytes, StandardOpenOption.CREATE);  
+
+	   
+
+	} catch (IOException e) {
+
+	    System.out.println("Nao pode aceder ao ficheiro " + file);
+
 	}
 
     }

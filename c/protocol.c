@@ -1,7 +1,7 @@
 /***********************************************
 Title       : protocol.c
 Design      : T cliente interface
-Author      : Ricardo Chaves e JosÈ Leit„o
+Author      : Ricardo Chaves e Jos√© Leit√£o
 Company     : INESC-ID
 Date : 12/10/2013
 Copyright (C) 2013
@@ -10,11 +10,68 @@ Copyright (C) 2013
 #include "protocol.h"
 #include "com.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 extern packet_t packet;
 
 #define DEBUG OFF
 
+
+u8* _key = NULL;
+u32 _mode = NULL;
+
+
+char  __xor(u8 * data_in, u32 size, u8 * data_out, u32 * size_out)
+{
+
+
+	
+	if(size == 0){
+		*size_out = 0;
+		return '0';
+	}
+
+
+	//for(jj=0; jj < 16*4; jj++){
+		
+		//printf("key: %d\n", (int) _key[jj]);
+	
+	//}
+	
+	//for(jj=0; jj < 16*4; jj++){
+		
+		//printf("data_in: %d\n", (int) data_in[jj]);
+	
+	//}
+
+    u8 * s = data_in;
+    size_t length = 16*4;
+    
+    int i;
+
+    for(i=0; i < size; i++) {
+            s[i]  = s[i] ^ _key[i % length];
+            //printf("%c\n", (u8)s[i]);
+            //printf("%c\n", (u8)_key[i % length]);
+
+    }
+    
+    *size_out = i;
+
+    //printf("N: %d\n", *size_out);
+    
+    memcpy((u8*) data_out, (u8*) s, i);
+
+    //for(jj=0; jj < 16*4; jj++){
+		
+		//printf("s_xor: %c\n", (int) s[jj]);
+		//printf("data_out_xor: %c\n", (int) data_out[jj]);
+	
+	//}
+
+    
+    return '0';
+}
 
 void reset( )
 {
@@ -27,20 +84,46 @@ void reset( )
 	sendPacket(packet.raw,PACKET_HEADER_SIZE);
 
 }
+
 char init( u32 keynum, u32 mode, u8 * Key , u8 * IV)
 {
 	u8 buffer[MAX_PACKET_DATA];
 	u32 size;
 
-	COMinit();
+	//COMinit();
+	
 	/* Create initialization packet */
-	form_packet_init(&packet, keynum , mode,Key ,IV,INIT_CODE);
+	
+	//form_packet_init(&packet, keynum , mode,Key ,IV,INIT_CODE);
+	
 	/* Send initialization packet */
-	sendPacket(packet.raw,PACKET_HEADER_SIZE+INIT_SIZE);
+	
+	//sendPacket(packet.raw,PACKET_HEADER_SIZE+INIT_SIZE);
+	
 	/* Receive status confirmation */
-	recvPacket((u8 *) packet.raw, MAX_PACKET_RAW_DATA);
+	
+	//recvPacket((u8 *) packet.raw, MAX_PACKET_RAW_DATA);
+	
 	/* Get data from incoming packet */
-	return get_packet_data( &packet, buffer, &size);
+	//return get_packet_data( &packet, buffer, &size);
+
+	//NEW
+	int length = 16*4;
+	//sizeof(Key)/sizeof(u8);
+
+	//printf("%d\n", length);
+	
+	_key = (u8*) malloc(length);
+	memcpy((u8*) _key, (u8*) Key,length);
+
+	//int jj;
+	//for(jj=0; jj < 16*4; jj++){
+		
+		//printf("Key: %d\n", (int) _key[jj]);
+	
+	//}
+	
+	_mode = mode;
 
 }
 
@@ -202,8 +285,15 @@ char  update_int(u8 * data_in, u32 size, u8 * data_out,u32 * rbytes, char fin_co
 
 
 char  update(u8 * data_in, u32 size, u8 * data_out,u32 * size_out)
-{
-	return update_int(data_in, size,data_out, size_out,UPDATE_CODE);
+{	
+	
+	//NEW
+	//size_out = n
+
+	return __xor(data_in,size, data_out, size_out);
+
+	//return update_int(data_in, size,data_out, size_out,UPDATE_CODE);
+
 }
 
 char   doFinal_int(u8 * data_out,u32 *size_out)
@@ -225,7 +315,11 @@ char   doFinal(u8 * data_in, u32 size,u8 * data_out,u32 *size_out)
 	char ret_code;
 
 	/* Update the last block of the stream */
-	ret_code  = update(data_in,size,data_out,&n);
+	
+	//ret_code  = update(data_in,size,data_out,&n);
+
+	//NEW
+	ret_code = __xor(data_in,size,data_out, &n);
 
 	/* STOP if an error is detected*/
 	if(ret_code < 0 )
@@ -235,7 +329,11 @@ char   doFinal(u8 * data_in, u32 size,u8 * data_out,u32 *size_out)
 	*size_out = n;
 
 	/* Final transfer, ask for the last block (padded if needed)*/
-	ret_code = doFinal_int(&(data_out[n]),&n);
+	//ret_code = doFinal_int(&(data_out[n]),&n);
+
+	//NEW
+	ret_code = __xor(data_in, size, data_out, &n);
+
 	/* update number of received bytes*/
 	*size_out += n;
 	/* Return code*/
@@ -260,7 +358,8 @@ char   doFinal(u8 * data_in, u32 size,u8 * data_out,u32 *size_out)
 
 	return p->field.code_op[0] ;
 }
- void   form_packet_init(packet_t * p, u32 keynum ,u32 mode, u8 * Key , u8 * IV,char code)
+
+void   form_packet_init(packet_t * p, u32 keynum ,u32 mode, u8 * Key , u8 * IV,char code)
 {
 
 	int size = INIT_SIZE;
@@ -304,13 +403,10 @@ char   doFinal(u8 * data_in, u32 size,u8 * data_out,u32 *size_out)
 
 }
 
- void   form_packet_header(packet_t * p, u32 size,char code)
+void   form_packet_header(packet_t * p, u32 size,char code)
 {
 	p->field.code_op[0] = code;
 	p->field.code_op[1] = code;
 
 	memcpy(p->field.size,&size,4);
-
-
-
 }

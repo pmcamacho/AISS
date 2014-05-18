@@ -18,7 +18,7 @@ public class CRYIOFileManager {
 	try {
 
 	    objFile = (CRYIOFile) new ObjectInputStream(new FileInputStream(path.toFile())).readObject();
-	    
+
 
 	} catch (FileNotFoundException e) {
 	    e.printStackTrace();
@@ -34,22 +34,53 @@ public class CRYIOFileManager {
 
     public static void writeFile(Path path, CRYIOFile cryio_file) {
 
+	ObjectOutputStream os = null;
+	
 	try {
 
-	    new ObjectOutputStream(new FileOutputStream(path.toFile())).writeObject(cryio_file);
+	    os =  new ObjectOutputStream(new FileOutputStream(path.toFile()));
+	    os.writeObject(cryio_file);
 
 	} catch (FileNotFoundException e) {
 	    System.out.println(path.toString());
+
 	    File file = new File(path.toString());
 	    try {
+
 		file.createNewFile();
 		new ObjectOutputStream(new FileOutputStream(path.toFile())).writeObject(cryio_file);
+
 	    } catch (IOException e1) {
-		// TODO Auto-generated catch block
+
 		e1.printStackTrace();
+	    
+	    } finally {
+		
+		if(os != null){
+		    try {
+			os.close();
+		    } catch (IOException e1) {
+		
+			e1.printStackTrace();
+		    }
+		}
+	    
 	    }
+
 	} catch (IOException e) {
+	
 	    e.printStackTrace();
+	
+	} finally {
+	    
+	    if(os != null)
+		try {
+		    os.close();
+		} catch (IOException e) {
+		   
+		    e.printStackTrace();
+		}
+	
 	}
 
     }

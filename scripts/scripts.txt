@@ -1,0 +1,5 @@
+#Gera Cliente.exe
+gcc util.c ethcom.c com.c protocol.c main.c -lws2_32 -o Cliente.exe
+
+#Gera dll para o java interagir com o C
+gcc -D_JNI_IMPLEMENTATION_ -Wl,--kill-at -I"C:\\Program Files (x86)\\Java\\jdk1.7.0_55\\include" -I"C:\\Program Files (x86)\\Java\\jdk1.7.0_55\\include\\win32" -shared util.c ethcom.c com.c main.c protocol.c CRYIO_HARDWARE_JNI.c -lws2_32 -o HARDWARE_JNI.dll

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <jni.h>
 #include "protocol.h"
 #include "CRYIO_HARDWARE_JNI.h"
@@ -35,18 +36,29 @@ JNIEXPORT void JNICALL Java_CRYIO_1HARDWARE_1JNI_init
 
 
 JNIEXPORT jchar JNICALL Java_CRYIO_1HARDWARE_1JNI_update
-  (JNIEnv * env, jobject obj, jbyteArray in, jlong len, jbyteArray out, jlong c){
+  (JNIEnv * env, jobject obj, jbyteArray in, jlong len, jbyteArray out, jlongArray c){
 	
-	unsigned char* buffer_in = (unsigned char*) (*env)->GetByteArrayElements(env,in, NULL);
+	unsigned char* buffer_in = (unsigned char*) (*env)->GetByteArrayElements(env, in, NULL);
 	unsigned int data_len = (unsigned int) len;
 
-	unsigned char* buffer_out = (unsigned char*) (*env)->GetByteArrayElements(env,out, NULL);
-	unsigned int n = (unsigned int) c;
+	unsigned char* buffer_out = (unsigned char*) (*env)->GetByteArrayElements(env, out, NULL);
+	
+	unsigned int * n = (unsigned int *) malloc( sizeof (unsigned int));
+	//*n = (*env)->GetArrayLength(env, in);
 
-	char retCode = update(buffer_in,data_len,buffer_out,&n);
+	//memcpy(buffer_out, buffer_in, *n);
+	//char retCode = (char) memcmp ( buffer_out, buffer_in, *n);
+
+	char retCode = update(buffer_in,data_len,buffer_out,n);
+
+	//Copia n para c
+	long * t_c = (long *) (*env)->GetLongArrayElements(env, c, NULL);
+	memcpy(t_c,n,sizeof(long));
+
 
 	(*env)->ReleaseByteArrayElements(env, in, (jbyte*) buffer_in, 0);
 	(*env)->ReleaseByteArrayElements(env, out, (jbyte*) buffer_out, 0);
+	(*env)->ReleaseLongArrayElements(env, c, (jlong*) t_c, 0);
 
 	return retCode;
 
@@ -54,18 +66,27 @@ JNIEXPORT jchar JNICALL Java_CRYIO_1HARDWARE_1JNI_update
 
 
 JNIEXPORT jchar JNICALL Java_CRYIO_1HARDWARE_1JNI_doFinal
-  (JNIEnv * env, jobject obj, jbyteArray in, jlong len, jbyteArray out, jlong c){
+  (JNIEnv * env, jobject obj, jbyteArray in, jlong len, jbyteArray out, jlongArray c){
 
 	unsigned char* buffer_in = (unsigned char*) (*env)->GetByteArrayElements(env, in, NULL);
 	unsigned int data_len = (unsigned int) len;
 
 	unsigned char* buffer_out = (unsigned char*) (*env)->GetByteArrayElements(env, out, NULL);
-	unsigned int n = (unsigned int) c;
 	
-	char retCode =  doFinal(buffer_in, data_len, buffer_out, &n);
+	unsigned int * n = (unsigned int *) malloc( sizeof (unsigned int));
+	//*n = (*env)->GetArrayLength(env, in);
+
+	//memcpy(buffer_out, buffer_in, *n);
+	//char retCode = (char) memcmp ( buffer_out, buffer_in, *n);
+
+	char retCode =  doFinal(buffer_in, data_len, buffer_out, n);
+
+	long * t_c = (long *) (*env)->GetLongArrayElements(env, c, NULL);
+	memcpy(t_c,n,sizeof(long));
 
 	(*env)->ReleaseByteArrayElements(env, in, (jbyte*) buffer_in, 0);
 	(*env)->ReleaseByteArrayElements(env, out, (jbyte*) buffer_out, 0);
+	(*env)->ReleaseLongArrayElements(env, c, (jlong*) t_c, 0);
 
 	return retCode;
 }

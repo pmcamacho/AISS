@@ -110,8 +110,13 @@ int main(int argc, char*argv[])
 
 		size_out = 0;
 		keynum = 0;
+
+
+		
+		
 		Key = (u8 *)origkey; 
 
+		
 
 		if(	(fp_r = fopen(src_file,"rb")) != NULL)
 		{

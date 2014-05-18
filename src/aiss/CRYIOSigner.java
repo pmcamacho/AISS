@@ -2,21 +2,28 @@ package aiss;
 
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 
+import cartaocidadaosign.CRYIOSignature;
+
 public class CRYIOSigner extends Signature {
 	
-	public CRYIOSigner() {
+	byte[] data;
+	CRYIOSignature signer;
+	
+	public CRYIOSigner() throws NoSuchAlgorithmException {
 		super("CRYIOSigner");
+		signer = CRYIOSignature.getInstance("SHA1withRSA");
 	}
 
 	@Override
 	protected void engineInitVerify(PublicKey publicKey)
 			throws InvalidKeyException {
-		// TODO Auto-generated method stub
+		signer.initVerify(publicKey);
 		
 	}
 	
@@ -33,31 +40,27 @@ public class CRYIOSigner extends Signature {
 
 	@Override
 	protected void engineUpdate(byte b) throws SignatureException {
-		// TODO Auto-generated method stub
-		
+
+		//Cartao de cidadao so suporta byte[]
 	}
 
 	@Override
 	protected void engineUpdate(byte[] b, int off, int len)
 			throws SignatureException {
-		// TODO Auto-generated method stub
+		data = b;
 		
 	}
 
 	@Override
 	protected byte[] engineSign() throws SignatureException {
-		// TODO Auto-generated method stub
 		
-		//byte[] dummyBytes = {'d'};
-		//return dummyBytes;
 		
-		return null;
+			return signer.sign();
 	}
 
 	@Override
 	protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-		// TODO Auto-generated method stub
-		return false;
+		signer.verifiy(sigBytes);
 	}
 
 	@Override

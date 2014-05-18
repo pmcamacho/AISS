@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -86,6 +87,7 @@ public class AiacSigner
     }
 
 
+
     public byte[] sign(byte [] nounce) throws PKCS11Exception, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 
@@ -148,64 +150,16 @@ public class AiacSigner
 	return signature;
 
     }
-    //107679788109673484080908988320885514708757674636582251559474809537456388182271981905458790676877466571440459946033835687897447171374945289933330122786027535950713806567247952469329535358149237394213091642242961539573346161013027261888159755925844088699448933179107707258451474593650110609582990704324800105251
-    //assinatura:  30 81 89 02 81 81 00 c2 16 09 6b 2f e4 8c 47 2b f1 a3 a6 ce dc e1 6b 7f d3 8d 54 01 ec 62 77 95 74 89 ce 97 60 26 ad c2 65 9c 6a f9 56 31 d7 fa 58 ba 0b 7a ac a7 fe 5a fa 4a 6f 7e ea ec f1 09 d5 12 60 77 05 ad 27 3d 8d 9d b4 f3 a0 3b d7 07 9a 54 eb c0 54 43 37 6f b6 94 1b 61 4e 16 da f1 6f 0f c8 e4 ac c0 90 fa 2b 54 35 e9 16 2b 7c c1 2e 8f ca e0 4a 17 a6 58 27 bf 3b ba 3c 26 f1 21 14 4f c6 39 2d eb 2f 02 03 01 00 01
-    //autenticacao:30 81 89 02 81 81 00 99 57 52 de 7c a4 2e b6 3c 6c b1 a9 35 a8 74 8b ab c1 90 d4 80 ac 28 2d 2a 55 ba 1f 1a fe 7d 9b a9 d7 b1 19 96 5f 6b fe 36 4b 23 6d b6 97 4e 65 31 ae a4 ee 78 f5 3c a5 ff f2 97 3d cd 16 6a 3a 14 af 55 cf f8 6d 0f 29 c6 81 4d 68 a0 3b f6 86 a0 63 7c 36 10 c1 ed e7 21 73 a4 44 c3 f4 d3 ad a4 ff e3 d3 a2 44 7a 61 77 fe c6 fc 65 7f a6 03 d4 b4 1f 6e 76 7f 8c 5f 10 13 b7 8d 43 1f 4b 23 02 03 01 00 01
     public boolean authenticate(X509Certificate cert, String alghoritm, byte[] data, byte[] signedData){
-
-	//		KeyPairGenerator keyGen = null;
-	//		try {
-	//			keyGen = KeyPairGenerator.getInstance("RSA");
-	//		} catch (NoSuchAlgorithmException e1) {
-	//			// TODO Auto-generated catch block
-	//			e1.printStackTrace();
-	//		}
-	//        keyGen.initialize(1024);
-	//        KeyPair pair = keyGen.genKeyPair();
-	//        PublicKey pubKey = pair.getPublic();
-	//        PrivateKey privKey = pair.getPrivate();
-	//chave de autenticacao da aplicacao
-	//String publicCardKeyAuth = "30818902818100995752de7ca42eb63c6cb1a935a8748babc190d480ac282d2a55ba1f1afe7d9ba9d7b119965f6bfe364b236db6974e6531aea4ee78f53ca5fff2973dcd166a3a14af55cff86d0f29c6814d68a03bf686a0637c3610c1ede72173a444c3f4d3ada4ffe3d3a2447a6177fec6fc657fa603d4b41f6e767f8c5f1013b78d431f4b230203010001";
-	//chave de assinatura da aplicacao
-	//String publicCardKeySign = "30818902818100c216096b2fe48c472bf1a3a6cedce16b7fd38d5401ec6277957489ce976026adc2659c6af95631d7fa58ba0b7aaca7fe5afa4a6f7eeaecf109d512607705ad273d8d9db4f3a03bd7079a54ebc05443376fb6941b614e16daf16f0fc8e4acc090fa2b5435e9162b7cc12e8fcae04a17a65827bf3bba3c26f121144fc6392deb2f0203010001";
-	//String publicKey = "107679788109673484080908988320885514708757674636582251559474809537456388182271981905458790676877466571440459946033835687897447171374945289933330122786027535950713806567247952469329535358149237394213091642242961539573346161013027261888159755925844088699448933179107707258451474593650110609582990704324800105251";
 
 	try {
 
-	    //BigInteger i = new BigInteger(publicCardKeyAuth,16);
-	    //System.out.println("<<<<"+i+">>>>");
-	    //Gerar nounce
-	    //byte[] nounce = new byte[512];
-	    //SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-	    //random.nextBytes(nounce);
-	    //byte[] rsaForSignature = null;
-
-	    //byte[] array = cert.getPublicKey().getEncoded();
-	    //BASE64Encoder encoder = new BASE64Encoder();
-
-	    //System.out.println("Pub.Key:" + neencoder.encode(array));
-	    //Chama cliente
-	    //try{
-	    //				Signature rsaForVerify = Signature.getInstance("SHA1withRSA");////
-	    //				rsaForVerify.initSign(privKey);///////////////////////////////
-	    //				rsaForVerify.update(nounce);////
-	    //				rsaForSignature = rsaForVerify.sign();////////
-	    //rsaForSignature = sign(nounce);
-	    //Cliente assina
-	    //}catch(Exception e){
-
-	    //System.out.println("Exception");
-	    //}
-	    //Verificar
-
+	    
 	    Signature rsaForVerify = Signature.getInstance(alghoritm);
-	    //rsaForVerify.initVerify(pubKey);
 	    rsaForVerify.initVerify(cert);
 	    rsaForVerify.update(data);
 	    return rsaForVerify.verify(signedData);
 
-	    //System.out.println("Had success?: " + suc);
-	    //return suc;
 
 	} catch (NoSuchAlgorithmException e) {
 	    e.printStackTrace();
@@ -222,7 +176,37 @@ public class AiacSigner
 
 
     }
+    
+    public boolean authenticate(PublicKey key, String alghoritm, byte[] data, byte[] signedData){
 
+    	try {
+
+    	    
+    	    Signature rsaForVerify = Signature.getInstance(alghoritm);
+    	    rsaForVerify.initVerify(key);
+    	    rsaForVerify.update(data);
+    	    return rsaForVerify.verify(signedData);
+
+
+    	} catch (NoSuchAlgorithmException e) {
+    	    e.printStackTrace();
+    	  
+    	} catch (InvalidKeyException e) {
+    	    e.printStackTrace();
+    	 
+    	} catch (SignatureException e) {
+    	    e.printStackTrace();
+    	 
+    	}
+
+    	return false;
+
+
+        }
+
+    
+    
+    
 
     public X509Certificate getAuthCertificate() throws CertificateException, PteidException{
 
@@ -679,4 +663,6 @@ public class AiacSigner
 
 	System.out.println("\n*********************************************\n");
     }
+
+	
 }

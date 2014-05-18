@@ -3,6 +3,7 @@ package cartaocidadaosign;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -15,9 +16,15 @@ public class CRYIOSignature {
 
 	private static AiacSigner signer = null;
 	private static CRYIOSignature sign = null;
-	private String alghoritm = null;
-	private X509Certificate cert = null;
-	private byte[] signData = null;
+
+	private static String alghoritm = null;
+
+	//Keys
+	private static PublicKey k = null;
+	private static X509Certificate cert = null;
+
+	//Data
+	private static byte[] signData = null;
 
 	private CRYIOSignature(String algh) throws NoSuchAlgorithmException{
 
@@ -28,10 +35,14 @@ public class CRYIOSignature {
 	}
 
 	public static CRYIOSignature getInstance(String algh) throws NoSuchAlgorithmException{
-		if(sign == null){
+		if((sign == null) || (!algh.equals(alghoritm))){
 			sign = new CRYIOSignature(algh);
-
 		}
+
+		k = null;
+		cert = null;
+		signData = null;
+
 		return sign;
 
 	} 
@@ -51,6 +62,15 @@ public class CRYIOSignature {
 			signer.startModule();
 		}
 		cert = signer.getAuthCertificate();
+	}
+
+
+	public void initVerify(PublicKey key) throws PteidException, CertificateException{
+		if(signer == null){
+			signer = new AiacSigner();
+			signer.startModule();
+		}
+		k = key;
 	}
 
 	public byte[] sign() throws Exception{
@@ -74,10 +94,27 @@ public class CRYIOSignature {
 
 	}
 
+
 	public boolean verifiy(byte[] signature){
+		
+		boolean hasKey = k != null;
+		boolean hasCertificate = cert != null;
+		
+		if((hasKey && hasCertificate) && (k.equals(cert.getPublicKey())))
+			return signer.authenticate(k, alghoritm, signData, signature);//could be certificate
 
+		
+		if(k != null)
+			return signer.authenticate(k, alghoritm, signData, signature);
+		else if(cert != null)
+			return signer.authenticate(cert, alghoritm, signData, signature);
+		else return false;
 
-		return signer.authenticate(cert, alghoritm, signData, signature);
+	}
+
+	public X509Certificate getCurrentCardCertificate(){
+
+		return cert;
 	}
 
 }

@@ -55,12 +55,21 @@ public class CRYIOSigner extends Signature {
 	protected byte[] engineSign() throws SignatureException {
 		
 		
-			return signer.sign();
+				try {
+					return signer.sign();
+				} catch (Exception e) {
+					if((e != null) && (e.getMessage() != null))
+						throw new SignatureException(e.getMessage());
+					else
+						throw new SignatureException("");
+
+				}
+			
 	}
 
 	@Override
 	protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-		signer.verifiy(sigBytes);
+		return signer.verifiy(sigBytes);
 	}
 
 	@Override

@@ -12,6 +12,9 @@ import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
 public class Teste {
 
 	
@@ -75,6 +78,18 @@ public class Teste {
 			e.printStackTrace();
 		}
 		
+//		Cipher c;
+//		try {
+//			
+//			c = Cipher.getInstance("CRYIOCipher", "ProviderAISS");
+//			
+//			System.out.println(c.getAlgorithm());
+//			
+//		} catch (NoSuchAlgorithmException | NoSuchProviderException
+//				| NoSuchPaddingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		 
 	}	

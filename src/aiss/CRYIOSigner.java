@@ -19,6 +19,10 @@ public class CRYIOSigner extends Signature {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	protected void engineInitVerify() {
+		
+	}
 
 	@Override
 	protected void engineInitSign(PrivateKey privateKey)
